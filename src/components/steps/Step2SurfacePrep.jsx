@@ -1,0 +1,28 @@
+import InputField from '../InputField';
+import { SECTION_ITEMS } from '../../constants/standards';
+
+export default function Step2SurfacePrep({ report, onChange }) {
+  const updateItem = (key, item) => {
+    onChange({
+      ...report,
+      items: { ...report.items, [key]: item },
+    });
+  };
+  
+  return (
+    <div>
+      <h3 className="step-title">표면처리</h3>
+      <p className="step-desc">Surface Preparation · 7개 항목</p>
+      
+      {SECTION_ITEMS.surfacePrep.map(key => (
+        <InputField
+          key={key}
+          itemKey={key}
+          item={report.items[key]}
+          onChange={updateItem}
+          allItems={report.items}
+        />
+      ))}
+    </div>
+  );
+}
