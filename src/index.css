@@ -1000,3 +1000,29 @@ input, select, textarea {
   color: white;
   box-shadow: 0 4px 10px rgba(198,40,40,0.3);
 }
+
+/* === 사진 업로드 - 카메라/갤러리 버튼 === */
+.photo-btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.photo-source-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border);
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.photo-source-btn:active {
+  background: var(--primary-bg);
+  border-color: var(--primary);
+  color: var(--primary);
+}

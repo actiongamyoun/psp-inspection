@@ -216,6 +216,17 @@ export default function Home() {
           onClick={() => setMenuOpen(null)}
         />
       )}
+
+      {/* 하단 크레딧 */}
+      <div style={{
+        textAlign: 'center',
+        padding: '10px 0 100px 0',
+        fontSize: 10,
+        color: '#bbb',
+        letterSpacing: 0.3,
+      }}>
+        developed by JNR · a508704@hd.com
+      </div>
     </div>
   );
 }
