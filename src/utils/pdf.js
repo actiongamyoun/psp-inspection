@@ -273,7 +273,7 @@ const buildHTML = (report) => {
   </table>
 </div>
 
-<!-- ====== 2페이지: 사진 2열 4행 ====== -->
+<!-- ====== 2페이지: 사진(2.) + 종합의견(3.) ====== -->
 <div class="page">
   <div class="title-bar">2. Inspection Report for Primary Surface Preparation (Photos)</div>
   <div class="subtitle-bar">
@@ -284,45 +284,43 @@ const buildHTML = (report) => {
   <div class="photo-grid">
     ${PHOTO_SECTIONS.map(s => renderPhotoSection(s, r.photos[s.key] || [])).join('')}
   </div>
-</div>
 
-<!-- ====== 3페이지: 종합의견 ====== -->
-<div class="page">
-  <div class="title-bar">3. 종합 의견 (Integrate Opinion of Inspection)</div>
-  <div class="subtitle-bar">
-    <span>${ORG} - 도장품질보증과</span>
-    <span>${basic.inspectionDate || ''}</span>
-  </div>
-
-  <table class="opinion-table">
-    <thead>
-      <tr>
-        <th style="width:72%; font-size:9.5pt;">${location}</th>
-        <th style="font-size:9.5pt;">Remarks</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="min-height:120pt;">
-          ${(r.opinion || '').replace(/</g, '&lt;').replace(/\n/g, '<br/>')}
-        </td>
-        <td style="text-align:center; vertical-align:top; padding-top:12pt; color:#c00; font-weight:700; font-size:10pt;">
-          ${basic.hullNo || '-'}<br/><br/>
-          ${basic.steelPlateNo || '-'}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div style="margin-top:14pt; font-size:9pt; border-top: 1px solid #ddd; padding-top: 8pt;">
-    <strong>Inspection Date:</strong>
-    <span style="color:#c00; font-weight:700;"> ${basic.inspectionDate || '-'}</span>
-    &emsp;
-    <strong>Inspector:</strong>
-    <span style="font-weight:700;"> ${inspector}</span>
-    &emsp;
-    <strong>Report ID:</strong>
-    <span style="font-family:monospace;"> ${r.id}</span>
+  <!-- 3. 종합의견 - 사진 아래 맨 마지막 -->
+  <div style="margin-top:10pt;">
+    <div class="title-bar" style="font-size:11pt;">3. 종합 의견 (Integrate Opinion of Inspection)</div>
+    <div class="subtitle-bar">
+      <span>${ORG} - 도장품질보증과</span>
+      <span>${basic.inspectionDate || ''}</span>
+    </div>
+    <table class="opinion-table">
+      <thead>
+        <tr>
+          <th style="width:72%; font-size:9pt;">${location}</th>
+          <th style="font-size:9pt;">Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8pt; min-height:60pt;">
+            ${(r.opinion || '').replace(/</g, '&lt;').replace(/\n/g, '<br/>')}
+          </td>
+          <td style="text-align:center; vertical-align:top; padding-top:10pt; color:#c00; font-weight:700; font-size:9.5pt;">
+            ${basic.hullNo || '-'}<br/><br/>
+            ${basic.steelPlateNo || '-'}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8pt; font-size:8.5pt; border-top: 1px solid #ddd; padding-top:6pt;">
+      <strong>Inspection Date:</strong>
+      <span style="color:#c00; font-weight:700;"> ${basic.inspectionDate || '-'}</span>
+      &emsp;
+      <strong>Inspector:</strong>
+      <span style="font-weight:700;"> ${inspector}</span>
+      &emsp;
+      <strong>Report ID:</strong>
+      <span style="font-family:monospace;"> ${r.id}</span>
+    </div>
   </div>
 </div>
 
