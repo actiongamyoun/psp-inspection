@@ -1,45 +1,44 @@
-// 기본 검사 위치 (관리자가 추가/삭제 가능)
-const DEFAULT_LOCATIONS = [
-  '신화테크 1공장',
-  '신화테크 2공장',
+// 검사위치 - 소속별 고정값 (로컬 저장 없이 코드로 관리)
+
+// QM이 선택 가능한 전체 위치 목록
+export const QM_LOCATIONS = [
+  '신화테크 1호기',
+  '신화테크 2호기',
   '한일철강',
   '제일테크노스 (광양)',
-  'HHI-1YD',
-  'HHI-2YD',
+  '한라티씨',
+  'HHI-1YD-1HO',
+  'HHI-1YD-2HO',
+  'HHI-1YD-3HO',
+  'HHI-2YD-1HO',
+  'HHI-2YD-2HO',
 ];
 
-const STORAGE_KEY = 'psp_locations';
+// 파트너별 위치 설정
+// type: 'select' → 선택 필요 (버튼), 'fixed' → 자동 고정
+export const PARTNER_LOCATIONS = {
+  SHINWHA: {
+    type: 'select',
+    options: ['신화테크 1호기', '신화테크 2호기'],
+  },
+  HANIL: {
+    type: 'fixed',
+    value: '한일철강',
+  },
+  JEILTECH: {
+    type: 'fixed',
+    value: '제일테크노스 (광양)',
+  },
+  HANLA: {
+    type: 'fixed',
+    value: '한라티씨',
+  },
+};
 
-export const getLocations = () => {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) return [...DEFAULT_LOCATIONS];
-    const parsed = JSON.parse(data);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : [...DEFAULT_LOCATIONS];
-  } catch (e) {
-    return [...DEFAULT_LOCATIONS];
+// 소속 ID로 위치 설정 가져오기
+export const getLocationConfig = (affiliationId) => {
+  if (affiliationId === 'QM') {
+    return { type: 'dropdown', options: QM_LOCATIONS };
   }
-};
-
-export const saveLocations = (locations) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(locations));
-};
-
-export const addLocation = (name) => {
-  const trimmed = name.trim();
-  if (!trimmed) return false;
-  const list = getLocations();
-  if (list.includes(trimmed)) return false;
-  list.push(trimmed);
-  saveLocations(list);
-  return true;
-};
-
-export const removeLocation = (name) => {
-  const list = getLocations().filter(l => l !== name);
-  saveLocations(list);
-};
-
-export const resetLocations = () => {
-  saveLocations([...DEFAULT_LOCATIONS]);
+  return PARTNER_LOCATIONS[affiliationId] || { type: 'fixed', value: '' };
 };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { APP_CONFIG } from '../constants/config';
-import { getLocations, addLocation, removeLocation, resetLocations } from '../constants/locations';
 import { getAllReports, deleteReport } from '../utils/storage';
 import { getAppsScriptUrl, setAppsScriptUrl } from '../utils/sheets';
 
@@ -10,14 +9,11 @@ export default function Admin() {
   const [unlocked, setUnlocked] = useState(false);
   const [pin, setPin] = useState('');
   
-  const [locations, setLocations] = useState([]);
-  const [newLoc, setNewLoc] = useState('');
   const [reports, setReports] = useState([]);
   const [scriptUrl, setScriptUrl] = useState('');
   
   useEffect(() => {
     if (unlocked) {
-      setLocations(getLocations());
       setReports(getAllReports().sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || '')));
       setScriptUrl(getAppsScriptUrl());
     }
@@ -32,27 +28,8 @@ export default function Admin() {
     }
   };
   
-  const handleAddLocation = () => {
-    const ok = addLocation(newLoc);
-    if (!ok) {
-      alert('이미 존재하거나 빈 값입니다');
-      return;
-    }
-    setLocations(getLocations());
-    setNewLoc('');
-  };
   
-  const handleRemoveLocation = (name) => {
-    if (!confirm(`"${name}" 위치를 삭제할까요?`)) return;
-    removeLocation(name);
-    setLocations(getLocations());
-  };
   
-  const handleResetLocations = () => {
-    if (!confirm('검사위치를 기본값으로 초기화할까요?')) return;
-    resetLocations();
-    setLocations(getLocations());
-  };
   
   const handleDeleteReport = (id) => {
     if (!confirm(`"${id}" 레포트를 삭제할까요?\n이 작업은 되돌릴 수 없습니다.`)) return;
@@ -163,52 +140,6 @@ export default function Admin() {
         <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, flex: 1 }}>관리자 모드</h2>
         <span style={{ fontSize: 13, opacity: 0.7 }}>🔒 admin0000</span>
       </header>
-      
-      {/* 검사위치 관리 */}
-      <div style={adminSectionStyle}>
-        <div style={adminTitleStyle}>
-          🏭 검사위치 관리
-          <button onClick={handleResetLocations} style={resetBtnStyle}>기본값으로 초기화</button>
-        </div>
-        <div>
-          {locations.map(loc => (
-            <div key={loc} style={locItemStyle}>
-              <span style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{loc}</span>
-              <button onClick={() => handleRemoveLocation(loc)} style={delBtnStyle}>삭제</button>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 6, padding: 12, borderTop: '1px solid #e0e0e0', background: '#f9f9f9' }}>
-          <input
-            value={newLoc}
-            onChange={(e) => setNewLoc(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAddLocation()}
-            placeholder="새 위치 이름 입력"
-            style={{
-              flex: 1,
-              padding: '9px 11px',
-              border: '1.5px solid #e0e0e0',
-              borderRadius: 8,
-              fontSize: 13,
-            }}
-          />
-          <button
-            onClick={handleAddLocation}
-            style={{
-              background: '#1B6B3A',
-              color: 'white',
-              padding: '9px 14px',
-              borderRadius: 8,
-              fontSize: 13,
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            + 추가
-          </button>
-        </div>
-      </div>
       
       {/* Apps Script URL */}
       <div style={adminSectionStyle}>
