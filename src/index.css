@@ -957,3 +957,46 @@ input, select, textarea {
   resize: vertical;
   line-height: 1.6;
 }
+
+/* === Rating 1~5 원형 버튼 === */
+.rating-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.rating-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: white;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rating-btn:active {
+  transform: scale(0.92);
+}
+
+.rating-btn.selected-ok {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+  box-shadow: 0 4px 10px rgba(46,125,50,0.35);
+}
+
+.rating-btn.selected-ng {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+  box-shadow: 0 4px 10px rgba(198,40,40,0.3);
+}

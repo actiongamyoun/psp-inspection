@@ -27,7 +27,8 @@ export const STANDARDS = {
     labelEn: 'Dust',
     unit: '',
     standard: 'Rating 1',
-    type: 'manual_pass_fail',
+    type: 'rating_1to5', // Rating 1 = 만족, 2~5 = 불만족
+    passRating: 1,
     section: 'surfacePrep',
   },
   millScale: {
@@ -232,6 +233,16 @@ export const judgeAuto = (key, value, allValues = {}) => {
       };
     }
     
+    case 'rating_1to5': {
+      const rating = parseInt(value);
+      if (isNaN(rating)) return { result: null, auto: false };
+      return {
+        result: rating <= (std.passRating || 1) ? '만족' : '불만족',
+        auto: false,
+        ratingValue: rating,
+      };
+    }
+
     case 'manual_pass_fail':
     case 'manual_select':
       // 수동 선택은 value가 곧 결과

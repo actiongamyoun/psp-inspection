@@ -1,81 +1,96 @@
 import { useEffect } from 'react';
 import { calcHumidity, judgeAuto, STANDARDS } from '../../constants/standards';
-import InputField from '../InputField';
 
 export default function Step4Environmental({ report, onChange }) {
   const items = report.items;
-  
-  // 건구/습구 입력 시 상대습도/이슬점 자동 계산
+
+  // 건구/습구 변경 시 → RH + DP 자동계산 + 철판온도 재판정
   useEffect(() => {
     const tdb = items.dryBulb.value;
     const twb = items.wetBulb.value;
-    
-    if (tdb !== '' && twb !== '' && !isNaN(parseFloat(tdb)) && !isNaN(parseFloat(twb))) {
-      const { rh, dp } = calcHumidity(tdb, twb);
-      
-      if (rh !== null && dp !== null) {
-        // 상대습도 자동 판정
-        const rhJudge = judgeAuto('relHumidity', rh);
-        // 이슬점은 판정 없음 (참조용)
-        // 철판온도가 입력되어 있으면 재판정
-        const surfaceJudge = items.surfaceTemp.value !== '' 
-          ? judgeAuto('surfaceTemp', items.surfaceTemp.value, { dewPoint: dp })
-          : { result: null, auto: false };
-        
-        const newItems = {
-          ...items,
-          relHumidity: {
-            ...items.relHumidity,
-            value: String(rh),
-            result: rhJudge.result,
-            isAuto: true,
-            autoMessage: rhJudge.message || '',
-            calculated: true,
-          },
-          dewPoint: {
-            ...items.dewPoint,
-            value: String(dp),
-            calculated: true,
-          },
-        };
-        
-        if (items.surfaceTemp.value !== '') {
-          newItems.surfaceTemp = {
+    if (tdb === '' || twb === '' || isNaN(parseFloat(tdb)) || isNaN(parseFloat(twb))) return;
+
+    const { rh, dp } = calcHumidity(tdb, twb);
+    if (rh === null || dp === null) return;
+
+    const rhJudge = judgeAuto('relHumidity', rh);
+    const stJudge = items.surfaceTemp.value !== ''
+      ? judgeAuto('surfaceTemp', items.surfaceTemp.value, { dewPoint: dp })
+      : { result: null, auto: false, message: '' };
+
+    onChange({
+      ...report,
+      items: {
+        ...items,
+        relHumidity: {
+          ...items.relHumidity,
+          value: String(rh),
+          result: rhJudge.result,
+          isAuto: true,
+          autoMessage: rhJudge.message || '',
+          calculated: true,
+        },
+        dewPoint: {
+          ...items.dewPoint,
+          value: String(dp),
+          calculated: true,
+        },
+        ...(items.surfaceTemp.value !== '' ? {
+          surfaceTemp: {
             ...items.surfaceTemp,
-            result: surfaceJudge.result,
-            isAuto: surfaceJudge.auto,
-            autoMessage: surfaceJudge.message || '',
-            reason: surfaceJudge.result === '불만족' ? (items.surfaceTemp.reason || '') : '',
-          };
-        }
-        
-        onChange({ ...report, items: newItems });
-      }
-    }
+            result: stJudge.result,
+            isAuto: stJudge.auto,
+            autoMessage: stJudge.message || '',
+            reason: stJudge.result === '불만족' ? (items.surfaceTemp.reason || '') : '',
+          },
+        } : {}),
+      },
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items.dryBulb.value, items.wetBulb.value]);
-  
-  const updateItem = (key, item) => {
-    onChange({ ...report, items: { ...report.items, [key]: item } });
+
+  // 철판온도 입력 시 → 현재 DP 기준으로 즉시 판정 ⭐ 버그 수정
+  const updateSurfaceTemp = (value) => {
+    const dp = items.dewPoint.value;
+    const judge = dp !== ''
+      ? judgeAuto('surfaceTemp', value, { dewPoint: parseFloat(dp) })
+      : { result: null, auto: false, message: '' };
+
+    onChange({
+      ...report,
+      items: {
+        ...items,
+        surfaceTemp: {
+          ...items.surfaceTemp,
+          value,
+          result: judge.result,
+          isAuto: judge.auto,
+          autoMessage: judge.message || '',
+          reason: judge.result === '불만족' ? (items.surfaceTemp.reason || '') : '',
+        },
+      },
+    });
   };
-  
+
   const updateBulb = (key, value) => {
     onChange({
       ...report,
-      items: { ...report.items, [key]: { ...report.items[key], value } },
+      items: { ...items, [key]: { ...items[key], value } },
     });
   };
-  
+
   const rh = items.relHumidity.value;
   const dp = items.dewPoint.value;
   const hasCalc = rh !== '' && dp !== '';
   const rhOk = items.relHumidity.result === '만족';
-  
+  const stOk = items.surfaceTemp.result === '만족';
+  const stNg = items.surfaceTemp.result === '불만족';
+
   return (
     <div>
       <h3 className="step-title">환경 조건</h3>
       <p className="step-desc">건구·습구 입력 → 습도·이슬점 자동계산</p>
-      
+
       {/* 건구/습구 나란히 */}
       <div className="dual-input">
         <div className="dual-card">
@@ -105,7 +120,7 @@ export default function Step4Environmental({ report, onChange }) {
           <div className="unit">℃</div>
         </div>
       </div>
-      
+
       {/* 자동계산 결과 */}
       {hasCalc ? (
         <div className="calc-box">
@@ -139,14 +154,48 @@ export default function Step4Environmental({ report, onChange }) {
           </div>
         </div>
       )}
-      
-      {/* 철판온도 */}
-      <InputField
-        itemKey="surfaceTemp"
-        item={items.surfaceTemp}
-        onChange={updateItem}
-        allItems={items}
-      />
+
+      {/* 철판온도 - 직접 렌더링 (allItems 즉시 반영) */}
+      <div className="field-card">
+        <div className="field-label">
+          철판온도
+          <span className="field-label-en">Surface Temp.</span>
+        </div>
+        <div className="field-standard">
+          표준: <span className="tag">
+            {dp !== '' ? `이슬점(${dp}℃) + 3℃ = ${(parseFloat(dp) + 3).toFixed(1)}℃ 초과` : '이슬점 + 3℃ 초과'}
+          </span>
+        </div>
+        <div className="input-row">
+          <input
+            className={`input-field ${stOk ? 'auto-ok' : stNg ? 'auto-ng' : ''}`}
+            type="number"
+            step="0.1"
+            value={items.surfaceTemp.value}
+            onChange={(e) => updateSurfaceTemp(e.target.value)}
+            placeholder="값 입력"
+          />
+          <span className="input-unit">℃</span>
+        </div>
+        {items.surfaceTemp.result && (
+          <span className={`judge-badge ${stOk ? 'ok' : 'ng'} auto`}>
+            자동: {items.surfaceTemp.result}
+            {items.surfaceTemp.autoMessage && ` (${items.surfaceTemp.autoMessage})`}
+          </span>
+        )}
+        {items.surfaceTemp.result === '불만족' && (
+          <textarea
+            className="reason-input"
+            value={items.surfaceTemp.reason || ''}
+            onChange={(e) => onChange({
+              ...report,
+              items: { ...items, surfaceTemp: { ...items.surfaceTemp, reason: e.target.value } },
+            })}
+            placeholder="불만족 사유를 입력하세요"
+            rows={2}
+          />
+        )}
+      </div>
     </div>
   );
 }
