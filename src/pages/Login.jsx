@@ -37,11 +37,13 @@ export default function Login() {
       <div className="login-screen">
         {/* 현대중공업 로고 */}
         <div className="login-logo">
-          <img
-            src="/hd_logo.png"
-            alt="HD현대중공업"
-            style={{ width: 180, marginBottom: 18, filter: 'brightness(0) invert(1)' }}
-          />
+          <div style={{ background: 'white', borderRadius: 12, padding: '10px 20px', display: 'inline-block', marginBottom: 18 }}>
+            <img
+              src="/hd_logo.png"
+              alt="HD현대중공업"
+              style={{ width: 160, display: 'block' }}
+            />
+          </div>
           <h1 className="title">{APP_CONFIG.APP_NAME}</h1>
           <div className="sub">{APP_CONFIG.APP_SUBTITLE}</div>
         </div>
@@ -90,11 +92,13 @@ export default function Login() {
   return (
     <div className="login-screen">
       <div className="login-logo" style={{ margin: '20px 0 30px' }}>
-        <img
-          src="/hd_logo.png"
-          alt="HD현대중공업"
-          style={{ width: 140, marginBottom: 14, filter: 'brightness(0) invert(1)' }}
-        />
+        <div style={{ background: 'white', borderRadius: 10, padding: '8px 16px', display: 'inline-block', marginBottom: 14 }}>
+          <img
+            src="/hd_logo.png"
+            alt="HD현대중공업"
+            style={{ width: 120, display: 'block' }}
+          />
+        </div>
         <h1 className="title" style={{ fontSize: 28 }}>{APP_CONFIG.APP_NAME}</h1>
         <div className="sub">{APP_CONFIG.APP_SUBTITLE}</div>
       </div>
