@@ -187,6 +187,22 @@ const buildHTML = (report) => {
     <span>${basic.inspectionDate || ''}</span>
   </div>
 
+  <!-- 검사정보 (표 위에) -->
+  <table style="margin-bottom:4pt;">
+    <tbody>
+      <tr>
+        <td style="background:#f0f7f3;font-weight:700;color:#1B6B3A;width:100pt;font-size:8.5pt;">Inspection Date</td>
+        <td style="font-weight:700;color:#c00;font-size:8.5pt;width:120pt;">${basic.inspectionDate || '-'}</td>
+        <td style="background:#f0f7f3;font-weight:700;color:#1B6B3A;width:80pt;font-size:8.5pt;">Inspector</td>
+        <td style="font-weight:700;font-size:8.5pt;">${inspector}</td>
+      </tr>
+      <tr>
+        <td style="background:#f0f7f3;font-weight:700;color:#1B6B3A;font-size:8.5pt;">Report ID</td>
+        <td colspan="3" style="font-family:monospace;font-size:8.5pt;font-weight:700;">${r.id}</td>
+      </tr>
+    </tbody>
+  </table>
+
   <table>
     <thead>
       <tr>
@@ -249,24 +265,14 @@ const buildHTML = (report) => {
 
       ${othRows}
 
-      <!-- 검사 정보 행 (표 안에 포함) -->
-      <tr class="info-row">
-        <td class="info-label" colspan="1" style="background:#f0f7f3;font-weight:700;color:#1B6B3A;">Inspection Date</td>
-        <td colspan="2" class="info-value" style="font-weight:700;color:#c00;">${basic.inspectionDate || '-'}</td>
-        <td class="info-label" style="background:#f0f7f3;font-weight:700;color:#1B6B3A;">Inspector</td>
-        <td colspan="2" class="info-value">${inspector}</td>
-      </tr>
-      <tr class="info-row">
-        <td class="info-label" style="background:#f0f7f3;font-weight:700;color:#1B6B3A;">Report ID</td>
-        <td colspan="5" style="font-family:monospace;font-size:8.5pt;font-weight:700;">${r.id}</td>
-      </tr>
+
     </tbody>
   </table>
 </div>
 
 <!-- ====== 2페이지: 사진 (1-1) ====== -->
 <div class="page">
-  <div class="title-bar">1-1. Inspection Report for Primary Surface Preparation</div>
+  <div class="title-bar">1. Inspection Report for Primary Surface Preparation (Photos)</div>
   <div class="subtitle-bar">
     <span>시스템품질경영1부 - 도장품질보증과</span>
     <span>Inspection Area : ${location} &nbsp;|&nbsp; ${basic.hullNo || '-'} / ${basic.steelPlateNo || '-'}</span>
