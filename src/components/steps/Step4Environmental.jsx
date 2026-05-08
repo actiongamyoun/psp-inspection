@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { calcHumidity, judgeAuto, STANDARDS } from '../../constants/standards';
 import TempPicker from '../TempPicker';
 
 export default function Step4Environmental({ report, onChange }) {
   const items = report.items;
-  const [picker, setPicker] = useState(null); // 'dryBulb' | 'wetBulb' | 'surfaceTemp'
 
   // 건구/습구 변경 시 RH + DP 자동계산
   useEffect(() => {
@@ -85,34 +84,35 @@ export default function Step4Environmental({ report, onChange }) {
   const stOk = items.surfaceTemp.result === '만족';
   const stNg = items.surfaceTemp.result === '불만족';
 
-  const TempBox = ({ itemKey, label, labelEn, minT = -20, maxT = 60 }) => {
-    const val = items[itemKey].value;
-    return (
-      <div className="dual-card" style={{ cursor: 'pointer' }}
-        onClick={() => setPicker({ key: itemKey, label, labelEn, min: minT, max: maxT })}>
-        <div className="label">{label}</div>
-        <div className="label-en">{labelEn}</div>
-        <div style={{
-          fontSize: 28, fontWeight: 800, textAlign: 'center',
-          padding: '10px 0', color: val !== '' ? '#1a1a1a' : '#ccc',
-          borderBottom: '2px solid #1B6B3A',
-        }}>
-          {val !== '' ? `${val}` : '- -'}
-        </div>
-        <div className="unit">℃ 탭하여 입력</div>
-      </div>
-    );
-  };
-
   return (
     <div>
       <h3 className="step-title">환경 조건</h3>
-      <p className="step-desc">탭하여 온도 입력 → 습도·이슬점 자동계산</p>
+      <p className="step-desc">숫자를 위/아래 스크롤하여 입력</p>
 
-      {/* 건구/습구 나란히 */}
+      {/* 건구/습구 인라인 드럼 */}
       <div className="dual-input">
-        <TempBox itemKey="dryBulb" label="건구온도" labelEn="Dry Bulb" minT={-20} maxT={60} />
-        <TempBox itemKey="wetBulb" label="습구온도" labelEn="Wet Bulb" minT={-20} maxT={60} />
+        <div className="dual-card">
+          <div className="label">건구온도</div>
+          <div className="label-en">Dry Bulb</div>
+          <TempPicker
+            value={items.dryBulb.value}
+            onChange={(v) => updateBulb('dryBulb', v)}
+            min={-20}
+            max={60}
+          />
+          <div className="hint" style={{ fontSize: 10, color: '#888', marginTop: 8 }}>↕ 숫자 스크롤</div>
+        </div>
+        <div className="dual-card">
+          <div className="label">습구온도</div>
+          <div className="label-en">Wet Bulb</div>
+          <TempPicker
+            value={items.wetBulb.value}
+            onChange={(v) => updateBulb('wetBulb', v)}
+            min={-20}
+            max={60}
+          />
+          <div className="hint" style={{ fontSize: 10, color: '#888', marginTop: 8 }}>↕ 숫자 스크롤</div>
+        </div>
       </div>
 
       {/* 자동계산 결과 */}
@@ -160,19 +160,18 @@ export default function Step4Environmental({ report, onChange }) {
             {dp !== '' ? `이슬점(${dp}℃) + 3℃ = ${(parseFloat(dp) + 3).toFixed(1)}℃ 초과` : '이슬점 + 3℃ 초과'}
           </span>
         </div>
-        <div
-          onClick={() => setPicker({ key: 'surfaceTemp', label: '철판온도', labelEn: 'Surface Temp.', min: -20, max: 80 })}
-          style={{
-            padding: '12px 14px',
-            border: `2px solid ${stOk ? '#2e7d32' : stNg ? '#c62828' : '#e0e0e0'}`,
-            borderRadius: 9,
-            background: stOk ? '#f1f8f3' : stNg ? '#fef1f1' : 'white',
-            fontSize: 22, fontWeight: 800, textAlign: 'center',
-            color: items.surfaceTemp.value !== '' ? '#1a1a1a' : '#ccc',
-            cursor: 'pointer',
-          }}
-        >
-          {items.surfaceTemp.value !== '' ? `${items.surfaceTemp.value} ℃` : '탭하여 입력'}
+        <div style={{
+          padding: 8,
+          border: `2px solid ${stOk ? '#2e7d32' : stNg ? '#c62828' : '#e0e0e0'}`,
+          borderRadius: 9,
+          background: stOk ? '#f1f8f3' : stNg ? '#fef1f1' : 'white',
+        }}>
+          <TempPicker
+            value={items.surfaceTemp.value}
+            onChange={(v) => updateSurfaceTemp(v)}
+            min={-20}
+            max={80}
+          />
         </div>
         {items.surfaceTemp.result && (
           <span className={`judge-badge ${stOk ? 'ok' : 'ng'} auto`}>
@@ -191,25 +190,6 @@ export default function Step4Environmental({ report, onChange }) {
           />
         )}
       </div>
-
-      {/* 온도 픽커 */}
-      {picker && (
-        <TempPicker
-          label={picker.label}
-          labelEn={picker.labelEn}
-          value={items[picker.key].value}
-          min={picker.min}
-          max={picker.max}
-          onChange={(val) => {
-            if (picker.key === 'surfaceTemp') {
-              updateSurfaceTemp(val);
-            } else {
-              updateBulb(picker.key, val);
-            }
-          }}
-          onClose={() => setPicker(null)}
-        />
-      )}
     </div>
   );
 }
