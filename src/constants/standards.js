@@ -26,10 +26,10 @@ export const STANDARDS = {
     label: '표면오염',
     labelEn: 'Dust',
     unit: '',
-    standard: 'Rating 1',
-    type: 'rating_1to5', // Rating 1 = 만족, 2~5 = 불만족
-    passRating: 1,
+    standard: 'ISO 8502-3: 입자크기 ≤ 2등급, 먼지양 ≤ 2등급',
+    type: 'iso_dust',
     section: 'surfacePrep',
+    iso: 'ISO 8502-3',
   },
   millScale: {
     label: 'Mill Scale',
@@ -290,4 +290,205 @@ export const calcHumidity = (tdb, twb) => {
     rh: Math.round(rh * 10) / 10,
     dp: Math.round(dp * 10) / 10,
   };
+};
+
+// =====================================================
+// ISO / ASTM 측정 프로시저 정보
+// =====================================================
+export const ISO_PROCEDURES = {
+  workSpeed: {
+    standard: '-',
+    title: '작업속도 (Work Speed)',
+    procedure: '블라스팅 작업 시 강판 이송 속도를 측정합니다.\n기준값: 4.8 m/min\n측정 방법: 작업 전 설비 속도계 확인 및 기록',
+  },
+  heatingState: {
+    standard: '-',
+    title: '예열상태 (Heating State)',
+    procedure: '블라스팅 전 강판 예열 여부를 확인합니다.\n점검 당일 Pre-Heating 준수 여부 확인\n상부: 320℃, 하부: 122℃ 기준',
+  },
+  dust: {
+    standard: 'ISO 8502-3',
+    title: '표면오염 - 먼지 평가 (Dust Assessment)',
+    procedure: `ISO 8502-3: 도장 전 강재 표면의 먼지 평가
+
+【입자 크기 등급 (Dust Size Class)】
+0등급: 10배 확대경으로 보이지 않음
+1등급: 10배 확대경으로만 보임 (≤50μm)
+2등급: 육안으로 보임 (50~100μm)
+3등급: 0.5mm 이하
+4등급: 0.5~2.5mm
+5등급: 2.5mm 초과
+
+【먼지 양 등급 (Dust Quantity Rating)】
+1등급: 거의 없음 (합격 기준)
+2등급: 약간 있음
+3등급: 중간
+4등급: 많음
+5등급: 매우 많음
+
+【판정 기준】
+입자크기 ≤ 2등급 AND 먼지양 ≤ 2등급 → 합격
+Dust Tape test 사용: 테이프를 표면에 붙였다 떼어 평가지에 붙여 비교`,
+  },
+  millScale: {
+    standard: 'ISO 8501-1',
+    title: 'Mill Scale 제거 등급 (Blast Cleaning Grade)',
+    procedure: `ISO 8501-1: 블라스트 청소 후 표면 청결도 등급
+
+【등급 기준】
+Sa 1: 가벼운 블라스트 청소
+Sa 2: 철저한 블라스트 청소
+Sa 2½: 매우 철저한 블라스트 청소 ← 기준
+Sa 3: 육안으로 깨끗한 강재
+
+【Sa 2½ 기준】
+표면에 오일, 그리스, 먼지, 밀스케일, 녹, 도료,
+이물질이 거의 없어야 함.
+남아있는 오염물의 흔적은 가벼운 얼룩 형태만 허용.
+잔존 밀스케일 ≤ 5% 허용`,
+  },
+  profile: {
+    standard: 'ISO 8503-2 / ASTM D4417',
+    title: '표면 조도 (Surface Profile)',
+    procedure: `ISO 8503-2 / ASTM D4417-C: 표면 조도 측정
+
+【측정 방법 - Replica Tape (ASTM D4417-C)】
+1. 측정 위치 표면의 먼지 제거
+2. Replica Tape를 표면에 부착
+3. Burnishing tool로 문질러 표면 형상 복제
+4. 마이크로미터로 테이프 총 두께 측정
+5. 테이프 기본 두께(50μm) 차감
+   → 실제 조도값
+
+【기준값】
+- 최소: 30 μm
+- 최대: 75 μm
+- 목표: Medium 등급 (42~85μm, ISO 8503)
+- 권장: 50~70 μm`,
+  },
+  dft: {
+    standard: 'ISO 2808 / SSPC-PA2',
+    title: '측정 건도막두께 평균 (Dry Film Thickness)',
+    procedure: `ISO 2808 / SSPC-PA2: 건도막 두께 측정
+
+【측정 방법】
+1. 자기유도식 두께 측정기 사용
+2. 측정 전 장비 교정 (영점 및 표준편차 확인)
+3. 측정 위치: 1m² 당 최소 5개 지점
+4. 각 지점에서 3회 측정 후 평균
+
+【기준값】
+평균: 8 ± 2 μm (6~10 μm)
+
+【SSPC-PA2 기준】
+- 개별 측정값: 기준값의 ±20% 이내
+- 5점 평균: 기준값 이상`,
+  },
+  waterSolubleSalts: {
+    standard: 'ISO 8502-6 / ISO 8502-9',
+    title: '수용성 염분 (Water Soluble Salts)',
+    procedure: `ISO 8502-6 / ISO 8502-9: 수용성 염분 측정
+
+【측정 방법 - Bresle Method (ISO 8502-6)】
+1. Bresle patch를 표면에 부착 (접촉면적 확인)
+2. 증류수 2~3mL 주입
+3. 10분간 방치 (염분 용출)
+4. 주사기로 용액 회수
+5. 전도도계로 측정 (ISO 8502-9)
+
+【계산식】
+염분농도(mg/m²) = (측정값 - 영점) × 6
+
+【기준값】
+≤ 50 mg/m² (PSPC 기준)
+Bresle patch 영점: 1.0 μS/cm`,
+  },
+  abrasivesConductivity: {
+    standard: 'ISO 11126 / ISO 11127',
+    title: '연마재 전기전도도 (Abrasives Conductivity)',
+    procedure: `ISO 11127-6: 연마재 수용성 불순물 측정
+
+【측정 방법】
+1. 연마재 시료 채취 (작업 전)
+2. 증류수와 1:1 혼합 후 교반
+3. 전도도계로 상등액 측정
+
+【기준값】
+≤ 250 μS/cm
+
+【주의사항】
+전도도 초과 시 연마재 교체 필요.
+높은 전도도 = 수용성 염분 오염 → 도막 하부 부식 원인`,
+  },
+  dryBulb: {
+    standard: '-',
+    title: '건구온도 / 습구온도 측정',
+    procedure: `아스만 통풍건습계 또는 디지털 온습도계 사용
+
+【측정 방법】
+1. 건구온도계: 일반 온도 측정
+2. 습구온도계: 감구부를 물에 적신 천으로 감싸 측정
+3. 통풍 상태에서 3~5분 후 안정값 읽기
+4. 두 값으로 상대습도 및 이슬점 계산
+
+【Magnus 공식 (자동계산)】
+상대습도 및 이슬점은 건구/습구 온도 입력 시 자동 계산됩니다.`,
+  },
+  surfaceTemp: {
+    standard: 'ISO 8502-4',
+    title: '철판온도 (Surface Temperature)',
+    procedure: `ISO 8502-4: 도장 전 표면 온도 측정
+
+【측정 방법】
+1. 접촉식 온도계 또는 적외선 온도계 사용
+2. 측정 위치: 도장 예정 구역 여러 곳
+3. 직사광선, 바람 등 환경 영향 고려
+
+【판정 기준】
+철판온도 > 이슬점 + 3℃
+
+【이유】
+이슬점에 근접한 온도에서 도장 시
+수분 응결로 인한 도막 부착력 저하 및 조기 부식 발생`,
+  },
+  mekTest: {
+    standard: 'ASTM D4752',
+    title: 'MEK 용제 저항성 시험 (MEK Rub Test)',
+    procedure: `ASTM D4752: 도막 경화 상태 평가
+
+【시험 방법】
+1. MEK(메틸에틸케톤) 용제를 거즈에 적심
+2. 도막 표면을 일정한 힘으로 왕복 문지름
+3. 50회 왕복 후 도막 상태 확인
+
+【Rating 기준】
+Rating 5: 도막 손상 없음 (완전 경화)
+Rating 4: 광택 약간 감소 (합격 기준)
+Rating 3: 도막 약간 연화
+Rating 2: 도막 상당 연화
+Rating 1: 도막 완전 제거
+
+【합격 기준】
+≥ Rating 4`,
+  },
+  facilityManagement: {
+    standard: '-',
+    title: '공장설비 관리',
+    procedure: '블라스팅 설비, 도장 설비 등 공장 내 설비 관리 상태 점검\n- 설비 청결도\n- 정기 유지보수 이행 여부\n- 안전장치 정상 작동 여부',
+  },
+  materialManagement: {
+    standard: '-',
+    title: '자재 관리',
+    procedure: '도료, 연마재 등 자재 관리 상태 점검\n- 야적장 및 옥내 보관 상태\n- 유효기간 관리\n- 혼합비율 준수 여부',
+  },
+  paintManagement: {
+    standard: '-',
+    title: '도료 관리',
+    procedure: '도료 보관 및 사용 상태 점검\n- 보관 온도/습도 적정 여부\n- Pot life 준수\n- 혼합 비율 (Paste:Liquid:Thinner) 기록',
+  },
+  reportManagement: {
+    standard: '-',
+    title: '전처리 일지 기록',
+    procedure: '전처리 작업 일지 기록 여부 확인\n- 작업일, 담당자, 기상 조건\n- 블라스팅 조건, 측정값 기록\n- 이상사항 기록',
+  },
 };

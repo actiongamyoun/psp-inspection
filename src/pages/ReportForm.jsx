@@ -141,23 +141,58 @@ export default function ReportForm() {
           <button className="save-btn" onClick={handleSave}>💾 저장</button>
         </div>
         
-        <div className="step-tabs">
-          {STEPS.map(s => {
-            const done = isStepDone(s.num, report);
-            const active = s.num === currentStep;
-            return (
-              <button
-                key={s.num}
-                className={`step-tab ${active ? 'active' : done ? 'done' : ''}`}
-                onClick={() => setCurrentStep(s.num)}
-              >
-                <span className="num">
-                  {!done || active ? <span className="num-text">{s.num}</span> : null}
-                </span>
-                {s.name}
-              </button>
-            );
-          })}
+        <div style={{ position: 'relative' }}>
+          <div className="step-tabs" id="step-tabs-scroll">
+            {STEPS.map(s => {
+              const done = isStepDone(s.num, report);
+              const active = s.num === currentStep;
+              return (
+                <button
+                  key={s.num}
+                  className={`step-tab ${active ? 'active' : done ? 'done' : ''}`}
+                  onClick={() => {
+                    setCurrentStep(s.num);
+                    // 활성 탭을 스크롤 중앙으로
+                    setTimeout(() => {
+                      const el = document.getElementById('step-tabs-scroll');
+                      const btn = el?.children[s.num - 1];
+                      if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }, 50);
+                  }}
+                >
+                  <span className="num">
+                    {!done || active ? <span className="num-text">{s.num}</span> : null}
+                  </span>
+                  {s.name}
+                </button>
+              );
+            })}
+          </div>
+          {/* PC 화살표 */}
+          <button
+            onClick={() => {
+              const el = document.getElementById('step-tabs-scroll');
+              if (el) el.scrollLeft -= 120;
+            }}
+            style={{
+              position: 'absolute', left: -14, top: 0, bottom: 10,
+              background: 'linear-gradient(to right, rgba(27,107,58,1) 60%, transparent)',
+              border: 'none', color: 'white', fontSize: 16, cursor: 'pointer',
+              paddingRight: 8, display: 'flex', alignItems: 'center',
+            }}
+          >‹</button>
+          <button
+            onClick={() => {
+              const el = document.getElementById('step-tabs-scroll');
+              if (el) el.scrollLeft += 120;
+            }}
+            style={{
+              position: 'absolute', right: -14, top: 0, bottom: 10,
+              background: 'linear-gradient(to left, rgba(27,107,58,1) 60%, transparent)',
+              border: 'none', color: 'white', fontSize: 16, cursor: 'pointer',
+              paddingLeft: 8, display: 'flex', alignItems: 'center',
+            }}
+          >›</button>
         </div>
         <div className="progress-bar"><div className="progress-fill" style={{ width: `${progress}%` }} /></div>
       </header>
