@@ -137,48 +137,50 @@ export default function InputField({ itemKey, item, onChange, allItems = {} }) {
         const isNg = item.result === '불만족';
         return (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 8 }}>
-              {/* 입자 크기 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 8 }}>
+              {/* 입자 크기 - 위 */}
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#555', marginBottom: 6, textAlign: 'center' }}>
-                  입자크기 등급
+                <div style={{
+                  fontSize: 12, fontWeight: 700, color: '#555',
+                  marginBottom: 8,
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <span>입자크기 등급 <span style={{ color: '#999', fontSize: 10, fontWeight: 500 }}>(Dust Size Class)</span></span>
+                  <span style={{ fontSize: 10, color: '#999', fontWeight: 600 }}>≤ 2 합격</span>
                 </div>
-                <div className="rating-row" style={{ gap: 5 }}>
+                <div className="rating-row">
                   {[0,1,2,3,4,5].map(r => (
                     <button key={r} type="button"
                       className={`rating-btn ${detail.size === String(r)
                         ? (r <= 2 ? 'selected-ok' : 'selected-ng') : ''}`}
-                      style={{ width: 38, height: 38, fontSize: 15 }}
                       onClick={() => handleDustChange('size', String(r))}
                     >{r}</button>
                   ))}
                 </div>
-                <div style={{ fontSize: 10, color: '#999', textAlign: 'center', marginTop: 4 }}>
-                  ≤ 2등급 합격
-                </div>
               </div>
-              {/* 먼지 양 */}
+              {/* 먼지 양 - 아래 */}
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#555', marginBottom: 6, textAlign: 'center' }}>
-                  먼지양 등급
+                <div style={{
+                  fontSize: 12, fontWeight: 700, color: '#555',
+                  marginBottom: 8,
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <span>먼지양 등급 <span style={{ color: '#999', fontSize: 10, fontWeight: 500 }}>(Quantity Rating)</span></span>
+                  <span style={{ fontSize: 10, color: '#999', fontWeight: 600 }}>≤ 2 합격</span>
                 </div>
-                <div className="rating-row" style={{ gap: 5 }}>
+                <div className="rating-row">
                   {[1,2,3,4,5].map(r => (
                     <button key={r} type="button"
                       className={`rating-btn ${detail.quantity === String(r)
                         ? (r <= 2 ? 'selected-ok' : 'selected-ng') : ''}`}
-                      style={{ width: 38, height: 38, fontSize: 15 }}
                       onClick={() => handleDustChange('quantity', String(r))}
                     >{r}</button>
                   ))}
                 </div>
-                <div style={{ fontSize: 10, color: '#999', textAlign: 'center', marginTop: 4 }}>
-                  ≤ 2등급 합격
-                </div>
               </div>
             </div>
             {item.result && (
-              <span className={`judge-badge ${isOk ? 'ok' : 'ng'} manual`} style={{ marginTop: 10 }}>
+              <span className={`judge-badge ${isOk ? 'ok' : 'ng'} manual`} style={{ marginTop: 12 }}>
                 {isOk ? '만족' : '불만족'}
                 {detail.size !== '' && ` (입자: ${detail.size}등급 / 먼지: ${detail.quantity}등급)`}
               </span>
