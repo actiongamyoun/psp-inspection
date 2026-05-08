@@ -1026,3 +1026,6 @@ input, select, textarea {
   border-color: var(--primary);
   color: var(--primary);
 }
+
+/* 인라인 드럼 스크롤바 숨김 */
+.temp-drum::-webkit-scrollbar { display: none; }
