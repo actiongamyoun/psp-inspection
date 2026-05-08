@@ -74,7 +74,7 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
     let valueStr = '';
     if (key === 'dust') {
       const d = item.dustDetail;
-      if (d?.size !== '' && d?.quantity !== '') {
+      if (d && d.size !== '' && d.size != null && d.quantity !== '' && d.quantity != null) {
         valueStr = `입자: ${d.size}등급 / 먼지: ${d.quantity}등급`;
       } else {
         valueStr = item.value || '';
