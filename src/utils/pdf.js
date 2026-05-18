@@ -305,8 +305,7 @@ const buildHTML = (report) => {
             ${(r.opinion || '').replace(/</g, '&lt;').replace(/\n/g, '<br/>')}
           </td>
           <td style="text-align:center; vertical-align:top; padding-top:10pt; color:#c00; font-weight:700; font-size:9.5pt;">
-            ${basic.hullNo || '-'}<br/><br/>
-            ${basic.steelPlateNo || '-'}
+            &nbsp;
           </td>
         </tr>
       </tbody>

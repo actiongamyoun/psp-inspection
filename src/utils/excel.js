@@ -333,8 +333,7 @@ export const generateExcel = async (report) => {
   s2.getCell(`A${opRow}`).fill = OPINION_FILL;
 
   s2.mergeCells(`D${opRow}:D${opEnd}`);
-  s2.getCell(`D${opRow}`).value = `${basic.hullNo || '-'}\n\n${basic.steelPlateNo || '-'}`;
-  s2.getCell(`D${opRow}`).font = { bold: true, color: { argb: 'FFCC0000' }, size: 10 };
+  s2.getCell(`D${opRow}`).value = '';
   s2.getCell(`D${opRow}`).alignment = { horizontal: 'center', vertical: 'top', wrapText: true };
   s2.getCell(`D${opRow}`).fill = OPINION_FILL;
 
