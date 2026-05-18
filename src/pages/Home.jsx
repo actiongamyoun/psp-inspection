@@ -117,6 +117,27 @@ export default function Home() {
           </div>
         </div>
 
+        {/* 안내 박스 */}
+        <div style={{
+          background: '#fffbea',
+          border: '1px solid #fde68a',
+          borderLeft: '4px solid #f59e0b',
+          borderRadius: 8,
+          padding: '10px 12px',
+          marginBottom: 18,
+          fontSize: 12,
+          lineHeight: 1.6,
+          color: '#78350f',
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span>⚠️</span>
+            <span>중요 안내</span>
+          </div>
+          <div>
+            해당 자료는 본 기기에 저장/관리되니, 작성 완료 후 필히 <b>엑셀/PDF 레포트</b>를 담당자와 공유 바랍니다.
+          </div>
+        </div>
+
         <h2 className="section-title">레포트 목록</h2>
         <div className="tab-bar">
           <button className={`tab ${tab === 'all' ? 'active' : ''}`} onClick={() => setTab('all')}>전체</button>

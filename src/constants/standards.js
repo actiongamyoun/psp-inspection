@@ -176,14 +176,14 @@ export const SECTION_ITEMS = {
 
 // 사진 항목
 export const PHOTO_SECTIONS = [
-  { key: 'surfaceProfile', label: '표면조도', en: 'Surface Profile', max: 3 },
-  { key: 'dust', label: '표면오염', en: 'Dust', max: 3 },
-  { key: 'salts', label: '염분도', en: 'Water Soluble Salts', max: 3 },
-  { key: 'conductivity', label: '연마재 전기전도도', en: 'Abrasives Conductivity', max: 3 },
-  { key: 'dft', label: 'D.F.T', en: 'D.F.T', max: 3 },
-  { key: 'beforeTreatment', label: '전처리 전 강재', en: 'Before Surface Treatment', max: 3 },
-  { key: 'afterTreatment', label: '전처리 후 강재', en: 'After Surface Treatment', max: 3 },
-  { key: 'shopprimer', label: 'Shopprimer', en: 'Shopprimer', max: 3 },
+  { key: 'surfaceProfile', label: '표면조도', en: 'Surface Profile', max: 2 },
+  { key: 'dust', label: '표면오염', en: 'Dust', max: 2 },
+  { key: 'salts', label: '염분도', en: 'Water Soluble Salts', max: 2 },
+  { key: 'conductivity', label: '연마재 전기전도도', en: 'Abrasives Conductivity', max: 2 },
+  { key: 'dft', label: 'D.F.T', en: 'D.F.T', max: 2 },
+  { key: 'beforeTreatment', label: '전처리 전 강재', en: 'Before Surface Treatment', max: 2 },
+  { key: 'afterTreatment', label: '전처리 후 강재', en: 'After Surface Treatment', max: 2 },
+  { key: 'shopprimer', label: 'Shopprimer', en: 'Shopprimer', max: 2 },
 ];
 
 // 자동 판정 함수

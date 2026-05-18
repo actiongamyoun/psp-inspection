@@ -810,8 +810,8 @@ input, select, textarea {
 
 .photo-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 .photo-thumb {

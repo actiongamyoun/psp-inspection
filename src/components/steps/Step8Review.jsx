@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { STANDARDS, SECTION_ITEMS, PHOTO_SECTIONS } from '../../constants/standards';
-import { uploadReport, getAppsScriptUrl } from '../../utils/sheets';
+import { uploadReport } from '../../utils/sheets';
 import { generatePDF } from '../../utils/pdf';
+import { generateExcel } from '../../utils/excel';
 import { saveReport } from '../../utils/storage';
 
-// 검토화면에서 표시할 항목 (calculated 포함 전체)
 const DISPLAY_KEYS = [
   ...SECTION_ITEMS.surfacePrep,
   ...SECTION_ITEMS.abrasives,
@@ -12,7 +12,6 @@ const DISPLAY_KEYS = [
   ...SECTION_ITEMS.others,
 ];
 
-// 판정 통계용 (판정이 있는 항목만)
 const JUDGE_KEYS = [
   ...SECTION_ITEMS.surfacePrep,
   ...SECTION_ITEMS.abrasives,
@@ -21,7 +20,7 @@ const JUDGE_KEYS = [
 ];
 
 export default function Step8Review({ report, onChange, onSubmitted }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(null); // 'pdf' | 'excel'
 
   const stats = JUDGE_KEYS.reduce((acc, key) => {
     const r = report.items[key]?.result;
@@ -34,32 +33,32 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
   const totalPhotos = Object.values(report.photos).flat().length;
   const overallOk = stats.ng === 0 && stats.empty === 0;
 
-  // PDF 다운로드 + 자동 구글시트 제출
-  const handlePDFAndSubmit = async () => {
+  // 공통: 저장 + 구글시트 업로드 + 출력
+  const handleOutput = async (type) => {
     if (stats.empty > 0) {
-      if (!confirm(`아직 입력하지 않은 항목이 ${stats.empty}개 있습니다. 그래도 PDF를 생성할까요?`)) return;
+      if (!confirm(`아직 입력하지 않은 항목이 ${stats.empty}개 있습니다. 그래도 진행할까요?`)) return;
     }
-    setLoading(true);
+    setLoading(type);
     try {
       const finalReport = { ...report, status: 'completed', submittedAt: new Date().toISOString() };
       saveReport(finalReport);
       onChange(finalReport);
 
-      // 구글시트 제출
-      const url = getAppsScriptUrl();
-      if (url && url !== '/api/submit') {
-        try { await uploadReport(finalReport); } catch (e) { console.warn('시트 업로드 실패:', e); }
+      // 구글시트 자동 저장 (조용히)
+      uploadReport(finalReport).catch(e => console.warn('시트 업로드 실패:', e));
+
+      // 출력
+      if (type === 'pdf') {
+        await generatePDF(finalReport);
       } else {
-        try { await uploadReport(finalReport); } catch (e) { console.warn('시트 업로드 실패:', e); }
+        await generateExcel(finalReport);
       }
 
-      // PDF 생성
-      await generatePDF(finalReport);
       if (onSubmitted) onSubmitted(finalReport);
     } catch (err) {
       alert('오류: ' + err.message);
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
@@ -67,8 +66,6 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
     const item = report.items[key];
     const std = STANDARDS[key];
     if (!item || !std) return null;
-
-    // 건구/습구/이슬점은 값만 표시 (판정 없음)
     const noJudge = ['dryBulb', 'wetBulb', 'dewPoint'].includes(key);
 
     let valueStr = '';
@@ -91,7 +88,7 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
   return (
     <div>
       <h3 className="step-title">최종 검토</h3>
-      <p className="step-desc">PDF 다운로드 시 자동으로 구글시트에 제출됩니다</p>
+      <p className="step-desc">아래 출력 버튼을 누르면 자동 저장됩니다</p>
 
       <div className="review-section">
         <div className="review-section-title">📋 기본 정보</div>
@@ -167,15 +164,32 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        className="btn btn-pdf"
-        style={{ width: '100%', padding: 16, fontSize: 15 }}
-        onClick={handlePDFAndSubmit}
-        disabled={loading}
-      >
-        {loading ? '처리중...' : '📄 PDF 다운로드 & 제출'}
-      </button>
+      {/* 출력 버튼 2개 */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        <button
+          type="button"
+          className="btn btn-pdf"
+          style={{ flex: 1, padding: 16, fontSize: 14 }}
+          onClick={() => handleOutput('pdf')}
+          disabled={loading !== null}
+        >
+          {loading === 'pdf' ? '생성중...' : '📄 PDF 다운로드'}
+        </button>
+        <button
+          type="button"
+          className="btn"
+          style={{
+            flex: 1, padding: 16, fontSize: 14,
+            background: '#107C41',
+            color: 'white',
+            boxShadow: '0 6px 16px rgba(16,124,65,0.3)',
+          }}
+          onClick={() => handleOutput('excel')}
+          disabled={loading !== null}
+        >
+          {loading === 'excel' ? '생성중...' : '📊 Excel 다운로드'}
+        </button>
+      </div>
     </div>
   );
 }
