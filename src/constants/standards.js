@@ -182,8 +182,8 @@ export const PHOTO_SECTIONS = [
   { key: 'conductivity', label: '연마재 전기전도도', en: 'Abrasives Conductivity', max: 2 },
   { key: 'dft', label: 'D.F.T', en: 'D.F.T', max: 2 },
   { key: 'beforeTreatment', label: '전처리 전 강재', en: 'Before Surface Treatment', max: 2 },
-  { key: 'afterTreatment', label: '전처리 후 강재', en: 'After Surface Treatment', max: 2 },
-  { key: 'shopprimer', label: 'Shopprimer', en: 'Shopprimer', max: 2 },
+  { key: 'afterTreatment', label: '파이널 컨디션', en: 'Final Condition', max: 2 },
+  { key: 'shopprimer', label: '도료 & Batch', en: 'Paint & Batch', max: 2 },
 ];
 
 // 자동 판정 함수
