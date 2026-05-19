@@ -107,7 +107,6 @@ export default function Home() {
       `필요한 PDF/Excel을 미리 다운로드 받았는지 확인하세요.\n\n` +
       `본 기기의 모든 레포트 ${reports.length}건을 삭제하시겠습니까?\n\n` +
       `• 본 기기에서만 삭제됩니다\n` +
-      `• 구글시트의 기록은 그대로 보존됩니다\n` +
       `• 이 작업은 되돌릴 수 없습니다`;
     if (!confirm(msg1)) return;
     if (!confirm(`정말 ${reports.length}건 전부 삭제할까요?`)) return;
@@ -217,16 +216,22 @@ export default function Home() {
               <div
                 key={r.id}
                 className="report-item"
-                onClick={() => handleOpenReport(r.id)}
                 style={{ position: 'relative' }}
               >
                 <div className="report-item-top">
-                  <div className="report-item-id">{r.id}</div>
+                  <div
+                    className="report-item-id"
+                    style={{ cursor: 'pointer', flex: 1 }}
+                    onClick={() => handleOpenReport(r.id)}
+                  >
+                    {r.id}
+                  </div>
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                     <span className={`status-badge ${r.status}`}>
                       {r.status === 'draft' ? '작성중' : '완료'}
                     </span>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setMenuOpen(menuOpen === r.id ? null : r.id);
@@ -244,10 +249,18 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
-                <div className="report-item-meta">
+                <div
+                  className="report-item-meta"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleOpenReport(r.id)}
+                >
                   {r.basic?.hullNo || '호선미정'} · {r.basic?.steelPlateNo || '강재번호 미정'}
                 </div>
-                <div className="report-item-sub">
+                <div
+                  className="report-item-sub"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleOpenReport(r.id)}
+                >
                   {r.inspector?.name} ({r.inspector?.affiliation}) · {r.basic?.inspectionDate || '-'}
                 </div>
 
@@ -265,21 +278,22 @@ export default function Home() {
                       minWidth: 140,
                       overflow: 'hidden',
                     }}
-                    onClick={(e) => e.stopPropagation()}
                   >
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
+                      type="button"
+                      onClick={() => {
                         setMenuOpen(null);
                         handleOpenReport(r.id);
                       }}
                       style={menuItemStyle}
                     >📝 열기/수정</button>
                     <button
+                      type="button"
                       onClick={(e) => handlePDFReport(e, r)}
                       style={menuItemStyle}
                     >📄 PDF 출력</button>
                     <button
+                      type="button"
                       onClick={(e) => handleDeleteReport(e, r)}
                       style={{ ...menuItemStyle, color: '#c62828', borderBottom: 'none' }}
                     >
