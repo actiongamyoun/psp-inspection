@@ -61,6 +61,7 @@ export default function Home() {
   };
 
   const handlePDFReport = async (e, report) => {
+    alert('PDF 클릭 감지됨: ' + report.id);
     e.stopPropagation();
     setMenuOpen(null);
     try {
@@ -71,6 +72,7 @@ export default function Home() {
   };
 
   const handleDeleteReport = (e, report) => {
+    alert('삭제 클릭 감지됨: ' + report.id);
     e.stopPropagation();
     e.preventDefault();
     const msg =
@@ -265,41 +267,60 @@ export default function Home() {
                 </div>
 
                 {menuOpen === r.id && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 36,
-                      right: 14,
-                      background: 'white',
-                      borderRadius: 10,
-                      boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
-                      border: '1px solid #e0e0e0',
-                      zIndex: 100,
-                      minWidth: 140,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(null);
-                        handleOpenReport(r.id);
+                  <>
+                    {/* 클릭 감지 오버레이 - 메뉴 닫기 */}
+                    <div
+                      style={{
+                        position: 'fixed', inset: 0, zIndex: 99,
                       }}
-                      style={menuItemStyle}
-                    >📝 열기/수정</button>
-                    <button
-                      type="button"
-                      onClick={(e) => handlePDFReport(e, r)}
-                      style={menuItemStyle}
-                    >📄 PDF 출력</button>
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteReport(e, r)}
-                      style={{ ...menuItemStyle, color: '#c62828', borderBottom: 'none' }}
+                      onClick={() => setMenuOpen(null)}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 50,
+                        right: 14,
+                        background: 'white',
+                        borderRadius: 10,
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                        border: '1px solid #e0e0e0',
+                        zIndex: 100,
+                        minWidth: 150,
+                        overflow: 'hidden',
+                      }}
                     >
-                      🗑 삭제
-                    </button>
-                  </div>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMenuOpen(null);
+                          handleOpenReport(r.id);
+                        }}
+                        style={menuItemStyle}
+                      >📝 열기/수정</div>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePDFReport(e, r);
+                        }}
+                        style={menuItemStyle}
+                      >📄 PDF 출력</div>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteReport(e, r);
+                        }}
+                        style={{ ...menuItemStyle, color: '#c62828', borderBottom: 'none' }}
+                      >
+                        🗑 삭제
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             ))}
@@ -310,13 +331,6 @@ export default function Home() {
       <button className="fab" onClick={handleNewReport}>
         + 새 레포트 작성
       </button>
-
-      {menuOpen && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 5 }}
-          onClick={() => setMenuOpen(null)}
-        />
-      )}
 
       {/* 하단 크레딧 */}
       <div style={{
