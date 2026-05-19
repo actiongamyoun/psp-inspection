@@ -9,7 +9,7 @@ import {
 import { getAffiliation } from '../constants/affiliations';
 import { getAllReports, deleteReport } from '../utils/storage';
 import { generatePDF } from '../utils/pdf';
-import { uploadReport, getAppsScriptUrl } from '../utils/sheets';
+import { uploadReport } from '../utils/sheets';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -70,38 +70,51 @@ export default function Home() {
     }
   };
 
-  const handleResubmit = async (e, report) => {
+  const handleDeleteReport = (e, report) => {
     e.stopPropagation();
-    setMenuOpen(null);
-    const url = getAppsScriptUrl();
-    if (!url) {
-      alert('Apps Script URL이 설정되지 않았습니다.\n관리자 모드에서 등록하세요.');
+    e.preventDefault();
+    const msg =
+      `⚠️ 삭제 후 본 기기에서는 이 레포트를 다시 볼 수 없습니다.\n` +
+      `PDF/Excel을 미리 다운로드 받았는지 확인하세요.\n\n` +
+      `레포트 "${report.id}"를 삭제하시겠습니까?\n\n` +
+      `• 본 기기에서 삭제됩니다\n` +
+      `• 구글시트에는 "삭제됨"으로 표시됩니다`;
+    if (!confirm(msg)) {
+      setMenuOpen(null);
       return;
     }
-    try {
-      await uploadReport(report);
-      alert('✓ 구글시트에 다시 업로드되었습니다');
-    } catch (err) {
-      alert('업로드 실패: ' + err.message);
-    }
+    // 구글시트에 삭제 표시 (조용히)
+    uploadReport({
+      ...report,
+      status: '삭제됨',
+      deletedAt: new Date().toISOString(),
+      deletedBy: `${inspectorName} (${aff?.name})`,
+    }).catch(err => console.warn('시트 업데이트 실패:', err));
+
+    // 로컬 삭제
+    deleteReport(report.id);
+    setMenuOpen(null);
+    refresh();
   };
 
-  const handleDeleteReport = async (e, report) => {
-    e.stopPropagation();
-    setMenuOpen(null);
-    if (!confirm(`레포트 "${report.id}"를 삭제하시겠습니까?\n\n• 본 기기에서 삭제됩니다\n• 구글시트에는 "삭제됨"으로 표시됩니다`)) return;
+  const handleDeleteAll = () => {
+    if (reports.length === 0) {
+      alert('삭제할 레포트가 없습니다');
+      return;
+    }
+    const msg1 =
+      `⚠️ 삭제 후 본 기기에서는 이 레포트들을 다시 볼 수 없습니다.\n` +
+      `필요한 PDF/Excel을 미리 다운로드 받았는지 확인하세요.\n\n` +
+      `본 기기의 모든 레포트 ${reports.length}건을 삭제하시겠습니까?\n\n` +
+      `• 본 기기에서만 삭제됩니다\n` +
+      `• 구글시트의 기록은 그대로 보존됩니다\n` +
+      `• 이 작업은 되돌릴 수 없습니다`;
+    if (!confirm(msg1)) return;
+    if (!confirm(`정말 ${reports.length}건 전부 삭제할까요?`)) return;
     try {
-      // 구글시트에 삭제 표시 (조용히)
-      uploadReport({
-        ...report,
-        status: '삭제됨',
-        deletedAt: new Date().toISOString(),
-        deletedBy: `${inspectorName} (${aff?.name})`,
-      }).catch(err => console.warn('시트 업데이트 실패:', err));
-
-      // 로컬 삭제
-      deleteReport(report.id);
+      localStorage.removeItem('psp_reports');
       refresh();
+      alert(`✓ ${reports.length}건이 삭제되었습니다`);
     } catch (err) {
       alert('삭제 실패: ' + err.message);
     }
@@ -159,7 +172,26 @@ export default function Home() {
           </div>
         </div>
 
-        <h2 className="section-title">레포트 목록</h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <h2 className="section-title" style={{ margin: 0 }}>레포트 목록</h2>
+          {reports.length > 0 && (
+            <button
+              onClick={handleDeleteAll}
+              style={{
+                background: 'transparent',
+                color: '#c62828',
+                border: '1px solid #ffcdd2',
+                padding: '4px 10px',
+                borderRadius: 6,
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              🗑 전체삭제
+            </button>
+          )}
+        </div>
         <div className="tab-bar">
           <button className={`tab ${tab === 'all' ? 'active' : ''}`} onClick={() => setTab('all')}>전체</button>
           <button className={`tab ${tab === 'draft' ? 'active' : ''}`} onClick={() => setTab('draft')}>작성중</button>
@@ -237,9 +269,6 @@ export default function Home() {
                   >
                     <button onClick={() => handleOpenReport(r.id)} style={menuItemStyle}>📝 열기/수정</button>
                     <button onClick={(e) => handlePDFReport(e, r)} style={menuItemStyle}>📄 PDF 출력</button>
-                    {r.status === 'completed' && (
-                      <button onClick={(e) => handleResubmit(e, r)} style={menuItemStyle}>📤 시트 재업로드</button>
-                    )}
                     <button
                       onClick={(e) => handleDeleteReport(e, r)}
                       style={{ ...menuItemStyle, color: '#c62828', borderBottom: 'none' }}
