@@ -79,8 +79,7 @@ export default function Home() {
       `⚠️ 삭제 후 본 기기에서는 이 레포트를 다시 볼 수 없습니다.\n` +
       `PDF/Excel을 미리 다운로드 받았는지 확인하세요.\n\n` +
       `레포트 "${report.id}"를 삭제하시겠습니까?\n\n` +
-      `• 본 기기에서 삭제됩니다\n` +
-      `• 구글시트에는 "삭제됨"으로 표시됩니다`;
+      `• 본 기기에서 삭제됩니다\n`;
     if (!confirm(msg)) {
       setMenuOpen(null);
       return;
