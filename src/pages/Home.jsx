@@ -261,14 +261,24 @@ export default function Home() {
                       borderRadius: 10,
                       boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
                       border: '1px solid #e0e0e0',
-                      zIndex: 10,
+                      zIndex: 100,
                       minWidth: 140,
                       overflow: 'hidden',
                     }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button onClick={() => handleOpenReport(r.id)} style={menuItemStyle}>📝 열기/수정</button>
-                    <button onClick={(e) => handlePDFReport(e, r)} style={menuItemStyle}>📄 PDF 출력</button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen(null);
+                        handleOpenReport(r.id);
+                      }}
+                      style={menuItemStyle}
+                    >📝 열기/수정</button>
+                    <button
+                      onClick={(e) => handlePDFReport(e, r)}
+                      style={menuItemStyle}
+                    >📄 PDF 출력</button>
                     <button
                       onClick={(e) => handleDeleteReport(e, r)}
                       style={{ ...menuItemStyle, color: '#c62828', borderBottom: 'none' }}
