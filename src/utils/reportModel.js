@@ -13,7 +13,7 @@ export const createNewReport = () => {
   const today = new Date().toISOString().slice(0, 10);
   
   return {
-    id: generateReportId(),
+    id: generateReportId(affId),
     status: 'draft',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

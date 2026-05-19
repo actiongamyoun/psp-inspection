@@ -86,6 +86,27 @@ export default function Home() {
     }
   };
 
+  const handleDeleteReport = async (e, report) => {
+    e.stopPropagation();
+    setMenuOpen(null);
+    if (!confirm(`레포트 "${report.id}"를 삭제하시겠습니까?\n\n• 본 기기에서 삭제됩니다\n• 구글시트에는 "삭제됨"으로 표시됩니다`)) return;
+    try {
+      // 구글시트에 삭제 표시 (조용히)
+      uploadReport({
+        ...report,
+        status: '삭제됨',
+        deletedAt: new Date().toISOString(),
+        deletedBy: `${inspectorName} (${aff?.name})`,
+      }).catch(err => console.warn('시트 업데이트 실패:', err));
+
+      // 로컬 삭제
+      deleteReport(report.id);
+      refresh();
+    } catch (err) {
+      alert('삭제 실패: ' + err.message);
+    }
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -219,6 +240,12 @@ export default function Home() {
                     {r.status === 'completed' && (
                       <button onClick={(e) => handleResubmit(e, r)} style={menuItemStyle}>📤 시트 재업로드</button>
                     )}
+                    <button
+                      onClick={(e) => handleDeleteReport(e, r)}
+                      style={{ ...menuItemStyle, color: '#c62828', borderBottom: 'none' }}
+                    >
+                      🗑 삭제
+                    </button>
                   </div>
                 )}
               </div>
