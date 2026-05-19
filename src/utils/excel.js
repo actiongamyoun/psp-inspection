@@ -46,7 +46,7 @@ const STD_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5
 const LABEL_BG = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFAFAFA' } };
 const OPINION_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDEEBF7' } };
 
-export const generateExcel = async (report) => {
+export const generateExcel = async (report, options = {}) => {
   const r = report;
   const it = r.items || {};
   const basic = r.basic || {};
@@ -349,17 +349,24 @@ export const generateExcel = async (report) => {
     `Inspection Date: ${basic.inspectionDate || '-'}    Inspector: ${inspector}    Report ID: ${r.id || ''}`;
   s2.getCell(`A${botRow}`).font = { size: 9 };
 
-  // 다운로드
+  // Blob 생성
   const buffer = await wb.xlsx.writeBuffer();
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${r.id || 'PSP_REPORT'}.xlsx`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  // 다운로드 (옵션)
+  if (options.download !== false) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${r.id || 'PSP_REPORT'}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // Blob 반환 (드라이브 업로드용)
+  return blob;
 };

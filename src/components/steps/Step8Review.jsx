@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { STANDARDS, SECTION_ITEMS, PHOTO_SECTIONS } from '../../constants/standards';
-import { uploadReport } from '../../utils/sheets';
+import { uploadReport, uploadExcelToDrive } from '../../utils/sheets';
 import { generatePDF } from '../../utils/pdf';
 import { generateExcel } from '../../utils/excel';
 import { saveReport } from '../../utils/storage';
@@ -33,7 +33,7 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
   const totalPhotos = Object.values(report.photos).flat().length;
   const overallOk = stats.ng === 0 && stats.empty === 0;
 
-  // 공통: 저장 + 구글시트 업로드 + 출력
+  // 공통: 저장 + 구글시트 + 드라이브 + 출력
   const handleOutput = async (type) => {
     if (stats.empty > 0) {
       if (!confirm(`아직 입력하지 않은 항목이 ${stats.empty}개 있습니다. 그래도 진행할까요?`)) return;
@@ -44,14 +44,22 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
       saveReport(finalReport);
       onChange(finalReport);
 
-      // 구글시트 자동 저장 (조용히)
+      // 1. 구글시트 자동 저장 (조용히)
       uploadReport(finalReport).catch(e => console.warn('시트 업로드 실패:', e));
 
-      // 출력
+      // 2. 출력 (PDF or Excel) - Excel은 Blob 받아서 드라이브 업로드용으로 사용
+      let excelBlob = null;
       if (type === 'pdf') {
         await generatePDF(finalReport);
+        // PDF 출력 시에도 Excel은 따로 만들어서 드라이브에만 업로드
+        excelBlob = await generateExcel(finalReport, { download: false });
       } else {
-        await generateExcel(finalReport);
+        excelBlob = await generateExcel(finalReport, { download: true });
+      }
+
+      // 3. 구글드라이브에 Excel 자동 업로드 (조용히)
+      if (excelBlob) {
+        uploadExcelToDrive(finalReport, excelBlob).catch(e => console.warn('드라이브 업로드 실패:', e));
       }
 
       if (onSubmitted) onSubmitted(finalReport);
