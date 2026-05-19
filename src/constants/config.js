@@ -4,8 +4,8 @@ export const APP_CONFIG = {
   APP_SUBTITLE: 'Primary Surface Preparation',
   ADMIN_PIN: 'admin0000',
   
-  // Google Apps Script Web App URL (배포 후 여기에 입력)
-  APPS_SCRIPT_URL: '',
+  // Google Apps Script Web App URL (Excel 드라이브 업로드용 직접 호출)
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzSkgXqpOTCiHEKcLkv6yaa_YjJMt6hpB0qg5hQkkVhMe0k9kw3Z4OMqKQYKWoeadkllA/exec',
   
   REPORT_PREFIX: 'HHI',
 };
