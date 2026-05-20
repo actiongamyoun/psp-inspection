@@ -181,7 +181,7 @@ export const PHOTO_SECTIONS = [
   { key: 'salts', label: '염분도', en: 'Water Soluble Salts', max: 2 },
   { key: 'conductivity', label: '연마재 전기전도도', en: 'Abrasives Conductivity', max: 2 },
   { key: 'dft', label: 'D.F.T', en: 'D.F.T', max: 2 },
-  { key: 'beforeTreatment', label: '전처리 전 강재', en: 'Before Surface Treatment', max: 2 },
+  { key: 'beforeTreatment', label: 'Blasting Condition', en: 'Blasting Condition', max: 2 },
   { key: 'afterTreatment', label: '파이널 컨디션', en: 'Final Condition', max: 2 },
   { key: 'shopprimer', label: '도료 & Batch', en: 'Paint & Batch', max: 2 },
 ];
