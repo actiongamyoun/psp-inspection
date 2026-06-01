@@ -13,7 +13,8 @@ const DISPLAY_KEYS = [
 ];
 
 const JUDGE_KEYS = [
-  ...SECTION_ITEMS.surfacePrep,
+  // heatingState 제외 (단순 기록용, 판정 대상 아님)
+  ...SECTION_ITEMS.surfacePrep.filter(k => k !== 'heatingState'),
   ...SECTION_ITEMS.abrasives,
   'relHumidity', 'surfaceTemp',
   ...SECTION_ITEMS.others,
@@ -74,7 +75,7 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
     const item = report.items[key];
     const std = STANDARDS[key];
     if (!item || !std) return null;
-    const noJudge = ['dryBulb', 'wetBulb', 'dewPoint'].includes(key);
+    const noJudge = ['dryBulb', 'wetBulb', 'dewPoint', 'heatingState'].includes(key);
 
     let valueStr = '';
     if (key === 'dust') {
@@ -123,7 +124,7 @@ export default function Step8Review({ report, onChange, onSubmitted }) {
           const info = getItemDisplay(key);
           if (!info) return null;
           const { std, valueStr, result } = info;
-          const noJudge = ['dryBulb', 'wetBulb', 'dewPoint'].includes(key);
+          const noJudge = ['dryBulb', 'wetBulb', 'dewPoint', 'heatingState'].includes(key);
           return (
             <div key={key} className="review-row">
               <span className="k">{std.label}</span>

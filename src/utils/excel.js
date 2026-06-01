@@ -202,6 +202,15 @@ export const generateExcel = async (report, options = {}) => {
         val = item?.value !== '' && item?.value != null ? `${item.value} %` : '-';
         res = item?.result || '-';
         rem = '자동계산 (Magnus)';
+      } else if (key === 'heatingState') {
+        // 예열상태: 단순 기록 (만족/불만족 판정 없음)
+        const stdDef = STANDARDS[key];
+        const item = it[key];
+        label = stdDef ? `${stdDef.label}\n(${stdDef.labelEn})` : key;
+        std = '-';
+        val = item?.value || '-';
+        res = '-';
+        rem = '';
       } else {
         const stdDef = STANDARDS[key];
         const item = it[key];

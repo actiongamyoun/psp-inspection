@@ -124,22 +124,26 @@ const buildHTML = (report) => {
     const cls = vcls(item?.result);
     const stdTxt = std.standard && std.standard !== '-'
       ? `${std.standard}${std.unit ? ' ' + std.unit : ''}` : '-';
+    // 예열상태는 단순 기록 - 결과/비고 비움
+    const isRecordOnly = k === 'heatingState';
+    const resCell = isRecordOnly ? '-' : rtext(item);
+    const remCell = isRecordOnly ? '' : rmtext(item);
     if (idx === 0) return `
       <tr>
         <td class="section-cell" rowspan="${spKeys.length}">Surface<br/>Preparation</td>
         <td class="label-cell">${std.label}<br/><span class="label-en">(${std.labelEn})</span></td>
         <td class="std-cell">${stdTxt}</td>
         <td class="value-cell ${cls}">${vtext(item, std)}</td>
-        <td class="value-cell ${cls}">${rtext(item)}</td>
-        <td class="remark-cell">${rmtext(item)}</td>
+        <td class="value-cell ${cls}">${resCell}</td>
+        <td class="remark-cell">${remCell}</td>
       </tr>`;
     return `
       <tr>
         <td class="label-cell">${std.label}<br/><span class="label-en">(${std.labelEn})</span></td>
         <td class="std-cell">${stdTxt}</td>
         <td class="value-cell ${cls}">${vtext(item, std)}</td>
-        <td class="value-cell ${cls}">${rtext(item)}</td>
-        <td class="remark-cell">${rmtext(item)}</td>
+        <td class="value-cell ${cls}">${resCell}</td>
+        <td class="remark-cell">${remCell}</td>
       </tr>`;
   }).join('');
 

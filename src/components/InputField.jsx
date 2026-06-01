@@ -62,8 +62,12 @@ export default function InputField({ itemKey, item, onChange, allItems = {} }) {
   const updateReason = (reason) => onChange(itemKey, { ...item, reason });
 
   const handleManualSelect = (selected) => {
+    // 예열상태는 판정 대상 아님 - 값만 기록
+    const isRecordOnly = itemKey === 'heatingState';
     onChange(itemKey, {
-      ...item, value: selected, result: selected,
+      ...item,
+      value: selected,
+      result: isRecordOnly ? null : selected,
       reason: selected === '불만족' ? (item.reason || '') : '',
       isAuto: false,
     });
