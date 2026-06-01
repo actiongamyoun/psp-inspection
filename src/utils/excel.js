@@ -185,7 +185,23 @@ export const generateExcel = async (report, options = {}) => {
         std = '-';
         val = `${it.dryBulb?.value || '-'} / ${it.wetBulb?.value || '-'} ℃`;
         res = '-';
-        rem = `Wet bulb : ${it.wetBulb?.value || '-'}℃`;
+        rem = '';
+      } else if (key === 'dewPoint') {
+        const item = it[key];
+        const stdDef = STANDARDS[key];
+        label = stdDef ? `${stdDef.label}\n(${stdDef.labelEn})` : key;
+        std = stdDef?.standard && stdDef.standard !== '-' ? stdDef.standard : '-';
+        val = item?.value !== '' && item?.value != null ? `${item.value} ℃` : '-';
+        res = '-'; // 이슬점은 판정 대상 아님 (철판온도와 비교용)
+        rem = '자동계산 (Magnus)';
+      } else if (key === 'relHumidity') {
+        const item = it[key];
+        const stdDef = STANDARDS[key];
+        label = stdDef ? `${stdDef.label}\n(${stdDef.labelEn})` : key;
+        std = stdDef?.standard ? `${stdDef.standard}${stdDef.unit ? ' ' + stdDef.unit : ''}` : '-';
+        val = item?.value !== '' && item?.value != null ? `${item.value} %` : '-';
+        res = item?.result || '-';
+        rem = '자동계산 (Magnus)';
       } else {
         const stdDef = STANDARDS[key];
         const item = it[key];
